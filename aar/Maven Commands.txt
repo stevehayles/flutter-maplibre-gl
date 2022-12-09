@@ -1,0 +1,8 @@
+// Deploy without a pom file (will upload the aar file but no dependencies will be resolved in any subsequent build
+mvn -X deploy:deploy-file "-DrepositoryId=repsy" "-Durl=https://repo.repsy.io/mvn/stevehayles/maplibre-sdk/" "-DgeneratePom=true" "-DgroupId=org.maplibre.gl" "-DartifactId=android-sdk" "-Dversion=9.5.2-SNAPSHOT" "-Dfile=android-sdk.aar"
+
+// Upload the AAR and POM file
+mvn -X deploy:deploy-file "-DrepositoryId=repsy" "-Durl=https://repo.repsy.io/mvn/stevehayles/maplibre-sdk/" "-DgeneratePom=false" "-DpomFile=android-sdk-9.5.2.pom" "-Dfile=android-sdk-9.5.2.aar"
+
+// deploy a jar file
+mvn -X deploy:deploy-file "-DrepositoryId=repsy" "-Durl=https://repo.repsy.io/mvn/stevehayles/maplibre-sdk/" "-DgeneratePom=false" "-DgroupId=org.maplibre.gl" "-DartifactId=android-sdk-geojson" "-Dversion=5.9.0" "-Dfile=android-sdk-geojson-5.9.0.jar" "-Dpackaging=jar"
