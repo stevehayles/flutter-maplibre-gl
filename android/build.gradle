@@ -17,10 +17,14 @@ rootProject.allprojects {
         google()
         mavenCentral()
         maven {  
-            url 'https://repo.repsy.io/mvn/stevehayles/maplibre-sdk' 
+            // set these values in gradle.properties in ~\.gradle\gradle.properties as an example
+            // mavenUrl=https://my-maven-repo-url
+            // mavenUser=myusername
+            // mavenPassword=mypassword
+            url "$mavenUrl" 
             credentials {
-                username "stevehayles"
-                password "....."
+                username "$mavenUser"
+                password "$mavenPassword"
             } 
         }
     }
@@ -46,8 +50,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     dependencies {
-        // change the following and comment out the repsey repo above to 
-        // resort back to the orginal maven central 9.5.2 release 
+        // change the following and comment out the maven (non-central) repo in
+        // rootProject.allprojects above to resort back to the orginal maven central release 
         //implementation 'org.maplibre.gl:android-sdk:9.5.2'
 
         implementation 'org.maplibre.gl:android-sdk:9.5.2-SNAPSHOT'
