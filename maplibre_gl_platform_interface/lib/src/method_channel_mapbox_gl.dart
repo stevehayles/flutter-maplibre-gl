@@ -149,7 +149,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
           onCreatePlatformView: (PlatformViewCreationParams params) {
             late AndroidViewController controller;
             if (useDelayedDisposalParam) {
-              controller = WrappedPlatformViewsService.initAndroidView(
+              controller = WrappedPlatformViewsService.initExpensiveAndroidView(
                 id: params.id,
                 viewType: 'plugins.flutter.io/mapbox_gl',
                 layoutDirection: TextDirection.ltr,
@@ -158,7 +158,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
                 onFocus: () => params.onFocusChanged(true),
               );
             } else {
-              controller = PlatformViewsService.initAndroidView(
+              controller = PlatformViewsService.initExpensiveAndroidView(
                 id: params.id,
                 viewType: 'plugins.flutter.io/mapbox_gl',
                 layoutDirection: TextDirection.ltr,
