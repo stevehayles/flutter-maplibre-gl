@@ -42,6 +42,25 @@ class WrappedPlatformViewsService {
     );
     return TextureAndroidViewControllerWrapper(view as TextureAndroidViewController);
   }
+
+  static AndroidViewController initSurfaceAndroidView({
+    required int id,
+    required String viewType,
+    required TextDirection layoutDirection,
+    dynamic creationParams,
+    MessageCodec<dynamic>? creationParamsCodec,
+    VoidCallback? onFocus,
+  }) {
+    final view = PlatformViewsService.initSurfaceAndroidView(
+      id: id,
+      viewType: viewType,
+      layoutDirection: layoutDirection,
+      creationParams: creationParams,
+      creationParamsCodec: creationParamsCodec,
+      onFocus: onFocus,
+    );
+    return TextureAndroidViewControllerWrapper(view);
+  }
 }
 
 class TextureAndroidViewControllerWrapper implements TextureAndroidViewController {

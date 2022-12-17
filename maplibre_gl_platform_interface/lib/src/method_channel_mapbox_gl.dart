@@ -132,70 +132,41 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
       final useDelayedDisposalParam = (creationParams['useDelayedDisposal'] ?? false) as bool;
       final useHybridCompositionParam =
           (creationParams['useHybridCompositionOverride'] ?? useHybridComposition) as bool;
-      if (useHybridCompositionParam) {
-        return PlatformViewLink(
-          viewType: 'plugins.flutter.io/mapbox_gl',
-          surfaceFactory: (
-            BuildContext context,
-            PlatformViewController controller,
-          ) {
-            return AndroidViewSurface(
-              controller: controller as AndroidViewController,
-              gestureRecognizers:
-                  gestureRecognizers ?? const <Factory<OneSequenceGestureRecognizer>>{},
-              hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-            );
-          },
-          onCreatePlatformView: (PlatformViewCreationParams params) {
-            late AndroidViewController controller;
-            if (useDelayedDisposalParam) {
-              controller = WrappedPlatformViewsService.initExpensiveAndroidView(
-                id: params.id,
-                viewType: 'plugins.flutter.io/mapbox_gl',
-                layoutDirection: TextDirection.ltr,
-                creationParams: creationParams,
-                creationParamsCodec: const StandardMessageCodec(),
-                onFocus: () => params.onFocusChanged(true),
-              );
-            } else {
-              controller = PlatformViewsService.initExpensiveAndroidView(
-                id: params.id,
-                viewType: 'plugins.flutter.io/mapbox_gl',
-                layoutDirection: TextDirection.ltr,
-                creationParams: creationParams,
-                creationParamsCodec: const StandardMessageCodec(),
-                onFocus: () => params.onFocusChanged(true),
-              );
-            }
-            controller.addOnPlatformViewCreatedListener(
-              params.onPlatformViewCreated,
-            );
-            controller.addOnPlatformViewCreatedListener(
-              onPlatformViewCreated,
-            );
-
-            controller.create();
-            return controller;
-          },
-        );
-      } else {
-        if (useDelayedDisposalParam) {
-          return AndroidViewWithWrappedController(
-            viewType: 'plugins.flutter.io/mapbox_gl',
-            onPlatformViewCreated: onPlatformViewCreated,
-            gestureRecognizers: gestureRecognizers,
-            creationParams: creationParams,
-            creationParamsCodec: const StandardMessageCodec(),
+      return PlatformViewLink(
+        viewType: 'plugins.flutter.io/mapbox_gl',
+        surfaceFactory: (
+          BuildContext context,
+          PlatformViewController controller,
+        ) {
+          return AndroidViewSurface(
+            controller: controller as AndroidViewController,
+            gestureRecognizers:
+                gestureRecognizers ?? const <Factory<OneSequenceGestureRecognizer>>{},
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
           );
-        }
-        return AndroidView(
-          viewType: 'plugins.flutter.io/mapbox_gl',
-          onPlatformViewCreated: onPlatformViewCreated,
-          gestureRecognizers: gestureRecognizers,
-          creationParams: creationParams,
-          creationParamsCodec: const StandardMessageCodec(),
-        );
-      }
+        },
+        onCreatePlatformView: (PlatformViewCreationParams params) {
+          final controller = _createViewController(
+              useHybridComposition: useHybridCompositionParam,
+              useDelayedDisposal: useDelayedDisposalParam,
+              id: params.id,
+              viewType: 'plugins.flutter.io/mapbox_gl',
+              layoutDirection: TextDirection.ltr,
+              creationParams: creationParams,
+              creationParamsCodec: const StandardMessageCodec(),
+              onFocus: () => params.onFocusChanged(true));
+
+          controller.addOnPlatformViewCreatedListener(
+            params.onPlatformViewCreated,
+          );
+          controller.addOnPlatformViewCreatedListener(
+            onPlatformViewCreated,
+          );
+
+          controller.create();
+          return controller;
+        },
+      );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
         viewType: 'plugins.flutter.io/mapbox_gl',
@@ -206,6 +177,59 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
       );
     }
     return Text('$defaultTargetPlatform is not yet supported by the maps plugin');
+  }
+
+  AndroidViewController _createViewController({
+    required bool useHybridComposition,
+    required bool useDelayedDisposal,
+    required int id,
+    required String viewType,
+    required TextDirection layoutDirection,
+    required Map<String, dynamic> creationParams,
+    required MessageCodec<dynamic>? creationParamsCodec,
+    required Function()? onFocus,
+  }) {
+    if (useHybridComposition) {
+      if (useDelayedDisposal) {
+        return WrappedPlatformViewsService.initExpensiveAndroidView(
+          id: id,
+          viewType: viewType,
+          layoutDirection: layoutDirection,
+          creationParams: creationParams,
+          creationParamsCodec: creationParamsCodec,
+          onFocus: onFocus,
+        );
+      } else {
+        return PlatformViewsService.initExpensiveAndroidView(
+          id: id,
+          viewType: viewType,
+          layoutDirection: layoutDirection,
+          creationParams: creationParams,
+          creationParamsCodec: creationParamsCodec,
+          onFocus: onFocus,
+        );
+      }
+    } else {
+      if (useDelayedDisposal) {
+        return WrappedPlatformViewsService.initSurfaceAndroidView(
+          id: id,
+          viewType: viewType,
+          layoutDirection: layoutDirection,
+          creationParams: creationParams,
+          creationParamsCodec: creationParamsCodec,
+          onFocus: onFocus,
+        );
+      } else {
+        return PlatformViewsService.initSurfaceAndroidView(
+          id: id,
+          viewType: viewType,
+          layoutDirection: layoutDirection,
+          creationParams: creationParams,
+          creationParamsCodec: creationParamsCodec,
+          onFocus: onFocus,
+        );
+      }
+    }
   }
 
   @override
