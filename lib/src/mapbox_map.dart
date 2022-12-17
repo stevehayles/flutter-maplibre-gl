@@ -307,7 +307,9 @@ class _MaplibreMapState extends State<MaplibreMap> {
       annotationConsumeTapEvents: widget.annotationConsumeTapEvents,
     );
     await _mapboxGlPlatform.initPlatform(id);
-    _controller.complete(controller);
+    if (!_controller.isCompleted) {
+      _controller.complete(controller);
+    }
     if (widget.onMapCreated != null) {
       widget.onMapCreated!(controller);
     }
