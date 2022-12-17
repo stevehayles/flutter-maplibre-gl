@@ -214,6 +214,10 @@ if you plan on committing from the Codespace.
 
 ## Fixing common issues
 
+### Flutter 3.x.x issues and experimental workarounds
+
+Since Flutter 3.x.x was introduced, it exposed some race conditions resulting in occasional crashes upon map disposal. The parameter `useDelayedDisposal` was introduced as a workaround for this issue until Flutter and/or Mapbox fix this issue properly. Use with caution - this is not yet production ready since several users still report crashes after using this workaround.
+
 ### Avoid Android UnsatisfiedLinkError
 
 Update buildTypes in `android\app\build.gradle`

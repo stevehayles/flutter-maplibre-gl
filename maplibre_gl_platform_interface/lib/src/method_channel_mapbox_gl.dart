@@ -19,11 +19,8 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
         final double y = call.arguments['y'];
         final double lng = call.arguments['lng'];
         final double lat = call.arguments['lat'];
-        onFeatureTappedPlatform({
-          'id': id,
-          'point': Point<double>(x, y),
-          'latLng': LatLng(lat, lng)
-        });
+        onFeatureTappedPlatform(
+            {'id': id, 'point': Point<double>(x, y), 'latLng': LatLng(lat, lng)});
         break;
       case 'feature#onDrag':
         final id = call.arguments['id'];
@@ -53,13 +50,11 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
         onCameraMoveStartedPlatform(null);
         break;
       case 'camera#onMove':
-        final cameraPosition =
-            CameraPosition.fromMap(call.arguments['position'])!;
+        final cameraPosition = CameraPosition.fromMap(call.arguments['position'])!;
         onCameraMovePlatform(cameraPosition);
         break;
       case 'camera#onIdle':
-        final cameraPosition =
-            CameraPosition.fromMap(call.arguments['position']);
+        final cameraPosition = CameraPosition.fromMap(call.arguments['position']);
         onCameraIdlePlatform(cameraPosition);
         break;
       case 'map#onStyleLoaded':
@@ -70,16 +65,14 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
         final double y = call.arguments['y'];
         final double lng = call.arguments['lng'];
         final double lat = call.arguments['lat'];
-        onMapClickPlatform(
-            {'point': Point<double>(x, y), 'latLng': LatLng(lat, lng)});
+        onMapClickPlatform({'point': Point<double>(x, y), 'latLng': LatLng(lat, lng)});
         break;
       case 'map#onMapLongClick':
         final double x = call.arguments['x'];
         final double y = call.arguments['y'];
         final double lng = call.arguments['lng'];
         final double lat = call.arguments['lat'];
-        onMapLongClickPlatform(
-            {'point': Point<double>(x, y), 'latLng': LatLng(lat, lng)});
+        onMapLongClickPlatform({'point': Point<double>(x, y), 'latLng': LatLng(lat, lng)});
 
         break;
       case 'map#onCameraTrackingChanged':
@@ -114,11 +107,9 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
                     x: heading['x'],
                     y: heading['y'],
                     z: heading['x'],
-                    timestamp: DateTime.fromMillisecondsSinceEpoch(
-                        heading['timestamp']),
+                    timestamp: DateTime.fromMillisecondsSinceEpoch(heading['timestamp']),
                   ),
-            timestamp: DateTime.fromMillisecondsSinceEpoch(
-                userLocation['timestamp'])));
+            timestamp: DateTime.fromMillisecondsSinceEpoch(userLocation['timestamp'])));
         break;
       default:
         throw MissingPluginException();
@@ -138,7 +129,10 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
       OnPlatformViewCreatedCallback onPlatformViewCreated,
       Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers) {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      if (useHybridComposition) {
+      final useDelayedDisposalParam = (creationParams['useDelayedDisposal'] ?? false) as bool;
+      final useHybridCompositionParam =
+          (creationParams['useHybridCompositionOverride'] ?? useHybridComposition) as bool;
+      if (useHybridCompositionParam) {
         return PlatformViewLink(
           viewType: 'plugins.flutter.io/mapbox_gl',
           surfaceFactory: (
@@ -147,21 +141,32 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
           ) {
             return AndroidViewSurface(
               controller: controller as AndroidViewController,
-              gestureRecognizers: gestureRecognizers ??
-                  const <Factory<OneSequenceGestureRecognizer>>{},
+              gestureRecognizers:
+                  gestureRecognizers ?? const <Factory<OneSequenceGestureRecognizer>>{},
               hitTestBehavior: PlatformViewHitTestBehavior.opaque,
             );
           },
           onCreatePlatformView: (PlatformViewCreationParams params) {
-            final SurfaceAndroidViewController controller =
-                PlatformViewsService.initSurfaceAndroidView(
-              id: params.id,
-              viewType: 'plugins.flutter.io/mapbox_gl',
-              layoutDirection: TextDirection.ltr,
-              creationParams: creationParams,
-              creationParamsCodec: const StandardMessageCodec(),
-              onFocus: () => params.onFocusChanged(true),
-            );
+            late AndroidViewController controller;
+            if (useDelayedDisposalParam) {
+              controller = WrappedPlatformViewsService.initAndroidView(
+                id: params.id,
+                viewType: 'plugins.flutter.io/mapbox_gl',
+                layoutDirection: TextDirection.ltr,
+                creationParams: creationParams,
+                creationParamsCodec: const StandardMessageCodec(),
+                onFocus: () => params.onFocusChanged(true),
+              );
+            } else {
+              controller = PlatformViewsService.initAndroidView(
+                id: params.id,
+                viewType: 'plugins.flutter.io/mapbox_gl',
+                layoutDirection: TextDirection.ltr,
+                creationParams: creationParams,
+                creationParamsCodec: const StandardMessageCodec(),
+                onFocus: () => params.onFocusChanged(true),
+              );
+            }
             controller.addOnPlatformViewCreatedListener(
               params.onPlatformViewCreated,
             );
@@ -174,6 +179,15 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
           },
         );
       } else {
+        if (useDelayedDisposalParam) {
+          return AndroidViewWithWrappedController(
+            viewType: 'plugins.flutter.io/mapbox_gl',
+            onPlatformViewCreated: onPlatformViewCreated,
+            gestureRecognizers: gestureRecognizers,
+            creationParams: creationParams,
+            creationParamsCodec: const StandardMessageCodec(),
+          );
+        }
         return AndroidView(
           viewType: 'plugins.flutter.io/mapbox_gl',
           onPlatformViewCreated: onPlatformViewCreated,
@@ -191,13 +205,11 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
         creationParamsCodec: const StandardMessageCodec(),
       );
     }
-    return Text(
-        '$defaultTargetPlatform is not yet supported by the maps plugin');
+    return Text('$defaultTargetPlatform is not yet supported by the maps plugin');
   }
 
   @override
-  Future<CameraPosition?> updateMapOptions(
-      Map<String, dynamic> optionsUpdate) async {
+  Future<CameraPosition?> updateMapOptions(Map<String, dynamic> optionsUpdate) async {
     final dynamic json = await _channel.invokeMethod(
       'map#update',
       <String, dynamic>{
@@ -223,10 +235,8 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   }
 
   @override
-  Future<void> updateMyLocationTrackingMode(
-      MyLocationTrackingMode myLocationTrackingMode) async {
-    await _channel
-        .invokeMethod('map#updateMyLocationTrackingMode', <String, dynamic>{
+  Future<void> updateMyLocationTrackingMode(MyLocationTrackingMode myLocationTrackingMode) async {
+    await _channel.invokeMethod('map#updateMyLocationTrackingMode', <String, dynamic>{
       'mode': myLocationTrackingMode.index,
     });
   }
@@ -288,8 +298,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   }
 
   @override
-  Future<List> queryRenderedFeaturesInRect(
-      Rect rect, List<String> layerIds, String? filter) async {
+  Future<List> queryRenderedFeaturesInRect(Rect rect, List<String> layerIds, String? filter) async {
     try {
       final Map<dynamic, dynamic> reply = await _channel.invokeMethod(
         'map#queryRenderedFeatures',
@@ -339,8 +348,8 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<LatLng> requestMyLocationLatLng() async {
     try {
-      final Map<dynamic, dynamic> reply = await _channel.invokeMethod(
-          'locationComponent#getLastLocation', null);
+      final Map<dynamic, dynamic> reply =
+          await _channel.invokeMethod('locationComponent#getLastLocation', null);
       double latitude = 0.0, longitude = 0.0;
       if (reply.containsKey('latitude') && reply['latitude'] != null) {
         latitude = double.parse(reply['latitude'].toString());
@@ -357,8 +366,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<LatLngBounds> getVisibleRegion() async {
     try {
-      final Map<dynamic, dynamic> reply =
-          await _channel.invokeMethod('map#getVisibleRegion', null);
+      final Map<dynamic, dynamic> reply = await _channel.invokeMethod('map#getVisibleRegion', null);
       final southwest = reply['sw'] as List<dynamic>;
       final northeast = reply['ne'] as List<dynamic>;
       return LatLngBounds(
@@ -371,26 +379,19 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   }
 
   @override
-  Future<void> addImage(String name, Uint8List bytes,
-      [bool sdf = false]) async {
+  Future<void> addImage(String name, Uint8List bytes, [bool sdf = false]) async {
     try {
-      return await _channel.invokeMethod('style#addImage', <String, Object>{
-        'name': name,
-        'bytes': bytes,
-        'length': bytes.length,
-        'sdf': sdf
-      });
+      return await _channel.invokeMethod('style#addImage',
+          <String, Object>{'name': name, 'bytes': bytes, 'length': bytes.length, 'sdf': sdf});
     } on PlatformException catch (e) {
       return new Future.error(e);
     }
   }
 
   @override
-  Future<void> addImageSource(
-      String imageSourceId, Uint8List bytes, LatLngQuad coordinates) async {
+  Future<void> addImageSource(String imageSourceId, Uint8List bytes, LatLngQuad coordinates) async {
     try {
-      return await _channel
-          .invokeMethod('style#addImageSource', <String, Object>{
+      return await _channel.invokeMethod('style#addImageSource', <String, Object>{
         'imageSourceId': imageSourceId,
         'bytes': bytes,
         'length': bytes.length,
@@ -404,8 +405,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<Point> toScreenLocation(LatLng latLng) async {
     try {
-      var screenPosMap =
-          await _channel.invokeMethod('map#toScreenLocation', <String, dynamic>{
+      var screenPosMap = await _channel.invokeMethod('map#toScreenLocation', <String, dynamic>{
         'latitude': latLng.latitude,
         'longitude': latLng.longitude,
       });
@@ -418,12 +418,10 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<List<Point>> toScreenLocationBatch(Iterable<LatLng> latLngs) async {
     try {
-      var coordinates = Float64List.fromList(latLngs
-          .map((e) => [e.latitude, e.longitude])
-          .expand((e) => e)
-          .toList());
-      Float64List result = await _channel.invokeMethod(
-          'map#toScreenLocationBatch', {"coordinates": coordinates});
+      var coordinates = Float64List.fromList(
+          latLngs.map((e) => [e.latitude, e.longitude]).expand((e) => e).toList());
+      Float64List result =
+          await _channel.invokeMethod('map#toScreenLocationBatch', {"coordinates": coordinates});
 
       var points = <Point>[];
       for (int i = 0; i < result.length; i += 2) {
@@ -449,8 +447,8 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   }
 
   @override
-  Future<void> addLayer(String imageLayerId, String imageSourceId,
-      double? minzoom, double? maxzoom) async {
+  Future<void> addLayer(
+      String imageLayerId, String imageSourceId, double? minzoom, double? maxzoom) async {
     try {
       return await _channel.invokeMethod('style#addLayer', <String, dynamic>{
         'imageLayerId': imageLayerId,
@@ -464,11 +462,10 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   }
 
   @override
-  Future<void> addLayerBelow(String imageLayerId, String imageSourceId,
-      String belowLayerId, double? minzoom, double? maxzoom) async {
+  Future<void> addLayerBelow(String imageLayerId, String imageSourceId, String belowLayerId,
+      double? minzoom, double? maxzoom) async {
     try {
-      return await _channel
-          .invokeMethod('style#addLayerBelow', <String, dynamic>{
+      return await _channel.invokeMethod('style#addLayerBelow', <String, dynamic>{
         'imageLayerId': imageLayerId,
         'imageSourceId': imageSourceId,
         'belowLayerId': belowLayerId,
@@ -483,8 +480,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<void> removeLayer(String layerId) async {
     try {
-      return await _channel.invokeMethod(
-          'style#removeLayer', <String, Object>{'layerId': layerId});
+      return await _channel.invokeMethod('style#removeLayer', <String, Object>{'layerId': layerId});
     } on PlatformException catch (e) {
       return new Future.error(e);
     }
@@ -493,8 +489,8 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<void> setFilter(String layerId, dynamic filter) async {
     try {
-      return await _channel.invokeMethod('style#setFilter',
-          <String, Object>{'layerId': layerId, 'filter': jsonEncode(filter)});
+      return await _channel.invokeMethod(
+          'style#setFilter', <String, Object>{'layerId': layerId, 'filter': jsonEncode(filter)});
     } on PlatformException catch (e) {
       return new Future.error(e);
     }
@@ -517,8 +513,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<LatLng> toLatLng(Point screenLocation) async {
     try {
-      var latLngMap =
-          await _channel.invokeMethod('map#toLatLng', <String, dynamic>{
+      var latLngMap = await _channel.invokeMethod('map#toLatLng', <String, dynamic>{
         'x': screenLocation.x,
         'y': screenLocation.y,
       });
@@ -531,8 +526,8 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<double> getMetersPerPixelAtLatitude(double latitude) async {
     try {
-      var latLngMap = await _channel
-          .invokeMethod('map#getMetersPerPixelAtLatitude', <String, dynamic>{
+      var latLngMap =
+          await _channel.invokeMethod('map#getMetersPerPixelAtLatitude', <String, dynamic>{
         'latitude': latitude,
       });
       return latLngMap['metersperpixel'];
@@ -551,8 +546,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   }
 
   @override
-  Future<void> setGeoJsonSource(
-      String sourceId, Map<String, dynamic> geojson) async {
+  Future<void> setGeoJsonSource(String sourceId, Map<String, dynamic> geojson) async {
     await _channel.invokeMethod('source#setGeoJson', <String, dynamic>{
       'sourceId': sourceId,
       'geojson': jsonEncode(geojson),
@@ -580,8 +574,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   }
 
   @override
-  Future<void> addSymbolLayer(
-      String sourceId, String layerId, Map<String, dynamic> properties,
+  Future<void> addSymbolLayer(String sourceId, String layerId, Map<String, dynamic> properties,
       {String? belowLayerId,
       String? sourceLayer,
       double? minzoom,
@@ -597,14 +590,12 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
       'maxzoom': maxzoom,
       'filter': jsonEncode(filter),
       'enableInteraction': enableInteraction,
-      'properties': properties
-          .map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
+      'properties': properties.map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
     });
   }
 
   @override
-  Future<void> addLineLayer(
-      String sourceId, String layerId, Map<String, dynamic> properties,
+  Future<void> addLineLayer(String sourceId, String layerId, Map<String, dynamic> properties,
       {String? belowLayerId,
       String? sourceLayer,
       double? minzoom,
@@ -620,14 +611,12 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
       'maxzoom': maxzoom,
       'filter': jsonEncode(filter),
       'enableInteraction': enableInteraction,
-      'properties': properties
-          .map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
+      'properties': properties.map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
     });
   }
 
   @override
-  Future<void> addCircleLayer(
-      String sourceId, String layerId, Map<String, dynamic> properties,
+  Future<void> addCircleLayer(String sourceId, String layerId, Map<String, dynamic> properties,
       {String? belowLayerId,
       String? sourceLayer,
       double? minzoom,
@@ -643,14 +632,12 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
       'maxzoom': maxzoom,
       'filter': jsonEncode(filter),
       'enableInteraction': enableInteraction,
-      'properties': properties
-          .map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
+      'properties': properties.map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
     });
   }
 
   @override
-  Future<void> addFillLayer(
-      String sourceId, String layerId, Map<String, dynamic> properties,
+  Future<void> addFillLayer(String sourceId, String layerId, Map<String, dynamic> properties,
       {String? belowLayerId,
       String? sourceLayer,
       double? minzoom,
@@ -666,8 +653,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
       'maxzoom': maxzoom,
       'filter': jsonEncode(filter),
       'enableInteraction': enableInteraction,
-      'properties': properties
-          .map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
+      'properties': properties.map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
     });
   }
 
@@ -686,47 +672,35 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   }
 
   @override
-  Future<void> addRasterLayer(
-      String sourceId, String layerId, Map<String, dynamic> properties,
-      {String? belowLayerId,
-      String? sourceLayer,
-      double? minzoom,
-      double? maxzoom}) async {
+  Future<void> addRasterLayer(String sourceId, String layerId, Map<String, dynamic> properties,
+      {String? belowLayerId, String? sourceLayer, double? minzoom, double? maxzoom}) async {
     await _channel.invokeMethod('rasterLayer#add', <String, dynamic>{
       'sourceId': sourceId,
       'layerId': layerId,
       'belowLayerId': belowLayerId,
       'minzoom': minzoom,
       'maxzoom': maxzoom,
-      'properties': properties
-          .map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
+      'properties': properties.map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
     });
   }
 
   @override
-  Future<void> addHillshadeLayer(
-      String sourceId, String layerId, Map<String, dynamic> properties,
-      {String? belowLayerId,
-      String? sourceLayer,
-      double? minzoom,
-      double? maxzoom}) async {
+  Future<void> addHillshadeLayer(String sourceId, String layerId, Map<String, dynamic> properties,
+      {String? belowLayerId, String? sourceLayer, double? minzoom, double? maxzoom}) async {
     await _channel.invokeMethod('hillshadeLayer#add', <String, dynamic>{
       'sourceId': sourceId,
       'layerId': layerId,
       'belowLayerId': belowLayerId,
       'minzoom': minzoom,
       'maxzoom': maxzoom,
-      'properties': properties
-          .map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
+      'properties': properties.map((key, value) => MapEntry<String, String>(key, jsonEncode(value)))
     });
   }
 
   Future<void> setFeatureForGeoJsonSource(
       String sourceId, Map<String, dynamic> geojsonFeature) async {
-    await _channel.invokeMethod('source#setFeature', <String, dynamic>{
-      'sourceId': sourceId,
-      'geojsonFeature': jsonEncode(geojsonFeature)
-    });
+    await _channel.invokeMethod('source#setFeature',
+        <String, dynamic>{'sourceId': sourceId, 'geojsonFeature': jsonEncode(geojsonFeature)});
   }
 
   @override
@@ -746,8 +720,7 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
   @override
   Future<List> getLayerIds() async {
     try {
-      final Map<dynamic, dynamic> reply =
-          await _channel.invokeMethod('style#getLayerIds');
+      final Map<dynamic, dynamic> reply = await _channel.invokeMethod('style#getLayerIds');
       return reply['layers'].map((it) => it.toString()).toList();
     } on PlatformException catch (e) {
       return new Future.error(e);
