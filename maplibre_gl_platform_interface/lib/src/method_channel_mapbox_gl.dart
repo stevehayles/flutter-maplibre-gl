@@ -750,4 +750,14 @@ class MethodChannelMaplibreGl extends MapLibreGlPlatform {
       return new Future.error(e);
     }
   }
+
+  @override
+  Future setRotationGestureThreshold({required double angleThreshold}) async {
+    try {
+      await _channel.invokeMethod(
+          'gestures#setRotationThreshold', <String, dynamic>{'angleThreshold': angleThreshold});
+    } on PlatformException catch (e) {
+      return new Future.error(e);
+    }
+  }
 }

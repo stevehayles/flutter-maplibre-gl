@@ -1376,6 +1376,15 @@ final class MapboxMapController
           result.success(reply);
           break;
         }
+        case "gestures#setRotationThreshold":
+        {
+          final double angleThreshold = call.argument("angleThreshold");
+          if (androidGesturesManager != null) {
+            androidGesturesManager.getRotateGestureDetector().setAngleThreshold((float)angleThreshold);
+          }
+          result.success(null);
+          break;
+        }
       default:
         result.notImplemented();
     }

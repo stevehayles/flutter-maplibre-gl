@@ -1179,6 +1179,10 @@ class MaplibreMapController extends ChangeNotifier {
     );
   }
 
+  Future setRotationGestureThreshold({required double angleThreshold}) async {
+    return _mapboxGlPlatform.setRotationGestureThreshold(angleThreshold: angleThreshold);
+  }
+
   /// Add a layer to the map with the given properties
   ///
   /// The returned [Future] completes after the change has been made on the
