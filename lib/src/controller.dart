@@ -576,6 +576,28 @@ class MaplibreMapController extends ChangeNotifier {
     return _mapboxGlPlatform.matchMapLanguageWithDeviceDefault();
   }
 
+  /// Updates the user position on the map.
+  ///
+  /// The returned [Future] completes after the change has been made on the
+  /// platform side.
+  Future<void> updateUserLocation({
+    required double lat,
+    required double lon,
+    double? alt,
+    double? acc,
+    double? heading,
+    double? speed,
+  }) async {
+    return _mapboxGlPlatform.updateUserLocation(
+      lat: lat,
+      lon: lon,
+      alt: alt,
+      acc: acc,
+      heading: heading,
+      speed: speed,
+    );
+  }
+
   /// Updates the distance from the edges of the map view’s frame to the edges
   /// of the map view’s logical viewport, optionally animating the change.
   ///

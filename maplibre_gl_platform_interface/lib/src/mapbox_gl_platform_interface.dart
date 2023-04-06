@@ -55,6 +55,15 @@ abstract class MapLibreGlPlatform {
 
   Future<void> matchMapLanguageWithDeviceDefault();
 
+  Future<void> updateUserLocation({
+    required double lat,
+    required double lon,
+    double? alt,
+    double? acc,
+    double? heading,
+    double? speed,
+  });
+
   void resizeWebMap();
   void forceResizeWebMap();
 
