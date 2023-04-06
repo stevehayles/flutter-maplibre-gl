@@ -59,7 +59,7 @@ class WrappedPlatformViewsService {
       creationParamsCodec: creationParamsCodec,
       onFocus: onFocus,
     );
-    return TextureAndroidViewControllerWrapper(view);
+    return TextureAndroidViewControllerWrapper(view as TextureAndroidViewController);
   }
 }
 
@@ -71,6 +71,8 @@ class TextureAndroidViewControllerWrapper implements TextureAndroidViewControlle
   // @override
   PointTransformer get pointTransformer => _controller.pointTransformer;
   set pointTransformer(PointTransformer transformer) => _controller.pointTransformer = transformer;
+
+  bool get requiresViewComposition => false;
 
   // @override
   void addOnPlatformViewCreatedListener(PlatformViewCreatedCallback listener) =>
@@ -92,11 +94,14 @@ class TextureAndroidViewControllerWrapper implements TextureAndroidViewControlle
   /// size is the view's initial size in logical pixel. size can be omitted
   /// if the concrete implementation doesn't require an initial size to create
   /// the platform view.
-  Future<void> create({Size? size}) async {
+  Future<void> create({Size? size, Offset? position}) async {
     await _controller.create();
     awaitingCreation = false;
     if (size != null) {
       await _controller.setSize(size);
+    }
+    if (position != null) {
+      await _controller.setOffset(position);
     }
   }
 
