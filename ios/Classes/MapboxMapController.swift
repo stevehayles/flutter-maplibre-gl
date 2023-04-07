@@ -1421,6 +1421,13 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
             if let source = mapView.style?.source(withIdentifier: sourceId) as? MGLShapeSource {
                 addedShapesByLayer[sourceId] = parsed
                 source.shape = parsed
+                print("Updated source \(sourceId)")
+            } else {
+                // Create a new source
+                let source = MGLShapeSource(identifier: sourceId, shape: parsed, options: [:])
+                addedShapesByLayer[sourceId] = parsed
+                mapView.style?.addSource(source)
+                print("Added source \(sourceId)")
             }
         } catch {}
     }

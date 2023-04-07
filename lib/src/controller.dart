@@ -305,11 +305,9 @@ class MaplibreMapController extends ChangeNotifier {
         promoteId: promoteId);
   }
 
-  /// Sets new geojson data to and existing source
+  /// Sets new geojson data to and existing source.
   ///
-  /// This only works as exected if the source has been created with
-  /// [addGeoJsonSource] before. This is very useful if you want to update and
-  /// existing source with modified data.
+  /// If no source with [sourceId] exists, this method will create a new source.
   ///
   /// The json in [geojson] has to comply with the schema for FeatureCollection
   /// as specified in https://datatracker.ietf.org/doc/html/rfc7946#section-3.3

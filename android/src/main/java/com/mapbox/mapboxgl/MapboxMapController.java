@@ -377,7 +377,11 @@ final class MapboxMapController
 
   private void setGeoJsonSource(String sourceName, String geojson) {
     FeatureCollection featureCollection = FeatureCollection.fromJson(geojson);
+    // Try to get the source, if it doesn't exist, create it
     GeoJsonSource geoJsonSource = style.getSourceAs(sourceName);
+    if (geoJsonSource == null) {
+      geoJsonSource = new GeoJsonSource(sourceName, featureCollection);
+    }
     addedFeaturesByLayer.put(sourceName, featureCollection);
 
     geoJsonSource.setGeoJson(featureCollection);
