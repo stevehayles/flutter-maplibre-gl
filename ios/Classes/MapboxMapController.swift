@@ -24,6 +24,9 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
     private var myLocationEnabled = false
     private var scrollingEnabled = true
 
+    private var puckImage: UIImage?
+    private var puckSize: Double?
+
     private var interactiveFeatureLayerIds = Set<String>()
     private var addedShapesByLayer = [String: MGLShape]()
 
@@ -1576,6 +1579,43 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
 
     func setAttributionButtonPosition(position: MGLOrnamentPosition) {
         mapView.attributionButtonPosition = position
+    }
+
+    /// Return the view for a specific kind of annotation.
+    func mapView(_ mapView: MGLMapView, viewFor annotation: MGLAnnotation) -> MGLAnnotationView? {
+        // Substitute our custom view for the user location annotation. This custom view is defined below.
+        if annotation is MGLUserLocation {
+            let view = CustomUserLocationAnnotationView()
+            view.puckImage = puckImage
+            let size = CGFloat(puckSize ?? 100.0)
+            view.bounds = .init(x: 0, y: 0, width: size, height: size)
+            return view
+        }
+        return nil
+    }
+
+    /// Load an ui image from the Flutter assets.
+    func load(uiImageFromPath path: String?) -> UIImage? {
+        guard let path = path else { return nil }
+        let key = registrar.lookupKey(forAsset: path)
+        guard
+            let bundlePath = Bundle.main.path(forResource: key, ofType: nil),
+            let image = UIImage(contentsOfFile: bundlePath)
+        else {
+            print("WARNING: Image \(path) could not be loaded from the Flutter assets.")
+            return nil
+        }
+        return image
+    }
+
+    func setPuckImage(_ puckImage: String?) {
+        print("Setting custom location puck foreground image: \(puckImage ?? "nil")")
+        self.puckImage = load(uiImageFromPath: puckImage)
+    }
+
+    func setPuckSize(_ puckSize: Double) {
+        print("Setting custom location puck size: \(puckSize)")
+        self.puckSize = puckSize
     }
 }
 

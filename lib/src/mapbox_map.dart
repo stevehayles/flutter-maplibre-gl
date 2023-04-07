@@ -55,6 +55,8 @@ class MaplibreMap extends StatefulWidget {
     ],
     this.useDelayedDisposal,
     this.useHybridCompositionOverride,
+    this.puckImage,
+    this.puckSize,
   })  : assert(annotationOrder.length <= 4),
         assert(annotationConsumeTapEvents.length > 0),
         super(key: key);
@@ -159,6 +161,12 @@ class MaplibreMap extends StatefulWidget {
 
   /// The mode to render the user location symbol
   final MyLocationRenderMode myLocationRenderMode;
+
+  /// Custom image for the user location icon.
+  final String? puckImage;
+
+  /// Custom size for the user location icon.
+  final double? puckSize;
 
   /// Set the layout margins for the Mapbox Logo
   final Point? logoViewMargins;
@@ -340,6 +348,8 @@ class _MapboxMapOptions {
     this.compassViewMargins,
     this.attributionButtonPosition,
     this.attributionButtonMargins,
+    this.puckImage,
+    this.puckSize,
   });
 
   static _MapboxMapOptions fromWidget(MaplibreMap map) {
@@ -362,6 +372,8 @@ class _MapboxMapOptions {
       compassViewMargins: map.compassViewMargins,
       attributionButtonPosition: map.attributionButtonPosition,
       attributionButtonMargins: map.attributionButtonMargins,
+      puckImage: map.puckImage,
+      puckSize: map.puckSize,
     );
   }
 
@@ -409,6 +421,10 @@ class _MapboxMapOptions {
     'doubleClickZoomEnabled'
   };
 
+  final String? puckImage;
+
+  final double? puckSize;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -446,6 +462,8 @@ class _MapboxMapOptions {
     addIfNonNull('compassViewMargins', pointToArray(compassViewMargins));
     addIfNonNull('attributionButtonPosition', attributionButtonPosition?.index);
     addIfNonNull('attributionButtonMargins', pointToArray(attributionButtonMargins));
+    addIfNonNull('puckImage', puckImage);
+    addIfNonNull('puckSize', puckSize);
     return optionsMap;
   }
 

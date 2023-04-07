@@ -286,5 +286,13 @@ class Convert {
       final Point point = toPoint(attributionButtonMarginsData, metrics.density);
       sink.setAttributionButtonMargins(point.x, point.y);
     }
+    final Object puckImage = data.get("puckImage");
+    if (puckImage != null) {
+      sink.setPuckImage(toString(puckImage));
+    }
+    final Object puckSize = data.get("puckSize");
+    if (puckSize != null) {
+      sink.setPuckSize(toDouble(puckSize));
+    }
   }
 }

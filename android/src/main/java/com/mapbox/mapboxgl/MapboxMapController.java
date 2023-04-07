@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
@@ -86,6 +87,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -140,6 +142,9 @@ final class MapboxMapController
 
   private Set<String> interactiveFeatureLayerIds;
   private Map<String, FeatureCollection> addedFeaturesByLayer;
+
+  private String puckImage;
+  private Double puckSize;
 
   private LatLngBounds bounds = null;
   Style.OnStyleLoaded onStyleLoadedCallback =
@@ -338,7 +343,45 @@ final class MapboxMapController
     if (lastLayerId != null) {
       optionsBuilder.layerAbove(lastLayerId);
     }
+
+    if (puckImage != null) {
+      final double size = puckSize == null ? 128 : puckSize;
+      final Bitmap image = addImageStyle(puckImage);
+      // Find out the scaling factor for the image.
+      final double pixelDensity = context.getResources().getDisplayMetrics().density;
+      final double scale = (size / image.getWidth()) * pixelDensity;
+      optionsBuilder.maxZoomIconScale((float) scale);
+      optionsBuilder.minZoomIconScale((float) scale);
+      // Use the bearing layer since that rotates with the user heading.
+      if (image != null) optionsBuilder.bearingName(puckImage);
+    }
+
     return optionsBuilder.build();
+  }
+
+  private Bitmap addImageStyle(String assetString) {
+    if (assetString == null) return null;
+    final String assetFilePath = MapboxMapsPlugin.flutterAssets.getAssetFilePathByName(assetString);
+
+    InputStream imgFile;
+    try{
+      imgFile = mapView.getContext().getAssets().open(assetFilePath);
+    }
+    catch(IOException ex){
+      System.out.println (ex.toString());
+      System.out.println("Could not find file " + assetFilePath);
+      return null;
+    }
+
+    Bitmap bitmap = null;
+    if (imgFile != null) bitmap = BitmapFactory.decodeStream(imgFile);
+
+    if (bitmap != null) {
+      mapboxMap.getStyle().addImage(assetString, bitmap);
+      return bitmap;
+    } else {
+      return null;
+    }
   }
 
   private void onUserLocationUpdate(Location location) {
@@ -1760,6 +1803,16 @@ final class MapboxMapController
         mapboxMap.getUiSettings().setAttributionMargins(0, 0, x, y);
         break;
     }
+  }
+
+  @Override
+  public void setPuckImage(String puckImage) {
+    this.puckImage = puckImage;
+  }
+
+  @Override
+  public void setPuckSize(Double puckSize) {
+    this.puckSize = puckSize;
   }
 
   private void updateMyLocationEnabled() {

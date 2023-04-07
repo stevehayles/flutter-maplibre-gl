@@ -35,6 +35,12 @@ class Convert {
         if let zoomGesturesEnabled = options["zoomGesturesEnabled"] as? Bool {
             delegate.setZoomGesturesEnabled(zoomGesturesEnabled: zoomGesturesEnabled)
         }
+        if let puckImage = options["puckImage"] as? String {
+            delegate.setPuckImage(puckImage)
+        }
+        if let puckSize: Double = options["puckSize"] as? Double {
+            delegate.setPuckSize(puckSize)
+        }
         if let myLocationEnabled = options["myLocationEnabled"] as? Bool {
             delegate.setMyLocationEnabled(myLocationEnabled: myLocationEnabled)
         }

@@ -43,4 +43,8 @@ interface MapboxMapOptionsSink {
   void setAttributionButtonGravity(int gravity);
 
   void setAttributionButtonMargins(int x, int y);
+
+  void setPuckImage(String puckImage);
+
+  void setPuckSize(Double puckSize);
 }

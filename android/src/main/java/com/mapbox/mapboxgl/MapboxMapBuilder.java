@@ -23,6 +23,9 @@ class MapboxMapBuilder implements MapboxMapOptionsSink {
   private String styleString = "https://demotiles.maplibre.org/style.json";
   private LatLngBounds bounds = null;
 
+  private String puckImage;
+  private Double puckSize;
+
   MapboxMapController build(
       int id,
       Context context,
@@ -32,6 +35,8 @@ class MapboxMapBuilder implements MapboxMapOptionsSink {
         new MapboxMapController(
             id, context, messenger, lifecycleProvider, options, styleString, dragEnabled);
     controller.init();
+    if (puckImage != null) controller.setPuckImage(puckImage);
+    if (puckSize != null) controller.setPuckSize(puckSize);
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationTrackingMode(myLocationTrackingMode);
     controller.setMyLocationRenderMode(myLocationRenderMode);
@@ -204,5 +209,15 @@ class MapboxMapBuilder implements MapboxMapOptionsSink {
 
   public void setDragEnabled(boolean enabled) {
     this.dragEnabled = enabled;
+  }
+
+  @Override
+  public void setPuckImage(String puckImage) {
+    this.puckImage = puckImage;
+  }
+
+  @Override
+  public void setPuckSize(Double puckSize) {
+    this.puckSize = puckSize;
   }
 }
