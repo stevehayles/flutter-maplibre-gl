@@ -9,6 +9,8 @@ This is all done from Docker using the following commands
 from inside the running container then run
 
 - _git clone --recurse-submodules --depth 1 https://github.com/maplibre/maplibre-gl-native.git_
+or 
+ _git clone --recurse-submodules --depth 1 https://github.com/stevehayles/maplibre-gl-native.git_
 - _cd maplibre-gl-native/platform/android_
 
 To build and run the tests run:
