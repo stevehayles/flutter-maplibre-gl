@@ -19,4 +19,6 @@ protocol MapboxMapOptionsSink {
     func setCompassViewMargins(x: Double, y: Double)
     func setAttributionButtonMargins(x: Double, y: Double)
     func setAttributionButtonPosition(position: MGLOrnamentPosition)
+    func setPuckImage(_ puckImage: String?)
+    func setPuckSize(_ puckSize: Double)
 }
