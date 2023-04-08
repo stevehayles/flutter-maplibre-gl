@@ -54,7 +54,7 @@ android {
         // rootProject.allprojects above to resort back to the orginal maven central release 
         //implementation 'org.maplibre.gl:android-sdk:9.5.2'
 
-        implementation 'org.maplibre.gl:android-sdk:9.5.5-SNAPSHOT'
+        implementation 'org.maplibre.gl:android-sdk:10.0.2-SNAPSHOT'
         implementation 'org.maplibre.gl:android-plugin-annotation-v9:1.0.0'
         implementation 'org.maplibre.gl:android-plugin-localization-v9:1.0.0'
         implementation 'org.maplibre.gl:android-plugin-offline-v9:1.0.0'

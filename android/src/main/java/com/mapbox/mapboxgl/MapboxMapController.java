@@ -292,10 +292,13 @@ final class MapboxMapController
       locationEngine = new CustomLocationManager(LocationEngineProvider.getBestLocationEngine(context));
       locationComponent = mapboxMap.getLocationComponent();
       locationComponent.activateLocationComponent(
-          context, style, buildLocationComponentOptions(style));
+          LocationComponentActivationOptions
+              .builder(context, style)
+              .locationEngine(locationEngine)
+              .build());
+
       locationComponent.setLocationComponentEnabled(true);
       // locationComponent.setRenderMode(RenderMode.COMPASS); // remove or keep default?
-      locationComponent.setLocationEngine(locationEngine);
       locationComponent.setMaxAnimationFps(30);
       updateMyLocationTrackingMode();
       updateMyLocationRenderMode();
