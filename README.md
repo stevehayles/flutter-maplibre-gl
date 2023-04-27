@@ -75,11 +75,12 @@ Add a settings.xml file C:\Users\<username>\.m2 containing the following setting
 Clearing the gradle cache of artifacts can solve a lot of problems. On Windows its located at 'C:\Users\<username>\.gradle\caches' and searches for the aar file (ie. 'android-sdk-9.5.2.aar') may yield lots of files which can be safely deleted. The folder 'C:\Users\<username>\.gradle\caches\modules-2\files-2.1\<group-id> cann be safely deleted in the event of Android build issues
 
 # Flutter Maplibre GL
+[![Flutter CI](https://github.com/maplibre/flutter-maplibre-gl/actions/workflows/flutter_ci.yml/badge.svg)](https://github.com/maplibre/flutter-maplibre-gl/actions/workflows/flutter_ci.yml)
+[![Generate docs](https://github.com/maplibre/flutter-maplibre-gl/actions/workflows/generate_docs.yml/badge.svg)](https://github.com/maplibre/flutter-maplibre-gl/actions/workflows/generate_docs.yml)
 
-[![Flutter CI](https://github.com/m0nac0/flutter-maplibre-gl/actions/workflows/flutter_ci.yml/badge.svg)](https://github.com/m0nac0/flutter-maplibre-gl/actions/workflows/flutter_ci.yml)
-[![Generate docs](https://github.com/m0nac0/flutter-maplibre-gl/actions/workflows/generate_docs.yml/badge.svg)](https://github.com/m0nac0/flutter-maplibre-gl/actions/workflows/generate_docs.yml)
+> ``⚠️`` Current notice: the repository has been transferred to the @maplibre organization. You shouldn't see any negative effects, as GitHub automatically redirects references from the old URL to the new URL. Please see [#221](https://github.com/maplibre/flutter-maplibre-gl/issues/221) for more information.
 
-This Flutter plugin allows to show **embedded interactive and customizable vector maps** as a Flutter widget.
+This Flutter plugin allows to show **embedded interactive and customizable vector maps** as a Flutter widget. 
 
 For the Android and iOS integration, we use [maplibre-gl-native](https://github.com/maplibre/maplibre-gl-native). For web, we rely on [maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js). This project only supports a subset of the API exposed by these libraries.
 
@@ -98,12 +99,12 @@ dependencies:
     ...
     maplibre_gl:
       git:
-        url: https://github.com/m0nac0/flutter-maplibre-gl.git
+        url: https://github.com/maplibre/flutter-maplibre-gl.git
         ref: main
 ```
 
 This will get you the very latest changes from the main branch.
-You can replace `main` with the name of the [latest release](https://github.com/m0nac0/flutter-maplibre-gl/releases)
+You can replace `main` with the name of the [latest release](https://github.com/maplibre/flutter-maplibre-gl/releases)
 to get a more stable version.
 
 Compared to flutter-mapbox-gl, the only breaking API changes are:
@@ -113,13 +114,13 @@ Compared to flutter-mapbox-gl, the only breaking API changes are:
 
 ### Documentation
 
-Documentation is available on the docs branch in the doc/api folder and automatically updated on each push to the main branch. You can easily preview the [documentation / API reference here.](https://htmlpreview.github.io/?https://github.com/m0nac0/flutter-maplibre-gl/blob/docs/doc/api/index.html)
+### Documentation
+Documentation is available on the docs branch in the doc/api folder and automatically updated on each push to the main branch. You can easily preview the [documentation / API reference here.](https://htmlpreview.github.io/?https://github.com/maplibre/flutter-maplibre-gl/blob/docs/doc/api/index.html)
 
 Please visit [https://github.com/maplibre/maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) and [https://github.com/maplibre/maplibre-gl-native](https://github.com/maplibre/maplibre-gl-native) for more information about the Maplibre libraries.
 
 ### iOS
-
-To use this plugin with iOS, you need to add the source repository and 2 additional pods to your Podfile, as shown in the example app: https://github.com/m0nac0/flutter-maplibre-gl/blob/main/example/ios/Podfile
+To use this plugin with iOS, you need to add the source repository and 2 additional pods to your Podfile, as shown in the example app: https://github.com/maplibre/flutter-maplibre-gl/blob/main/example/ios/Podfile
 
 ```ruby
 source 'https://cdn.cocoapods.org/'
@@ -200,10 +201,10 @@ A possible explanation could be: "Shows your location on the map".
 
 ## Getting Help
 
-- **Need help with your code?**: Check the [discussions](https://github.com/m0nac0/flutter-maplibre-gl/discussions) on this repo or open a new one.
-  Or look for previous questions on the [#maplibre tag](https://stackoverflow.com/questions/tagged/maplibre) — or [ask a new question](https://stackoverflow.com/questions/tagged/maplibre).
-- **Have a bug to report?** [Open an issue](https://github.com/m0nac0/flutter-maplibre-gl/issues/new). If possible, include a full log and information which shows the issue.
-- **Have a feature request?** [Open an issue](https://github.com/m0nac0/flutter-maplibre-gl/issues/new). Tell us what the feature should do and why you want the feature.
+- **Need help with your code?**: Check the [discussions](https://github.com/maplibre/flutter-maplibre-gl/discussions) on this repo or open a new one. 
+ Or look for previous questions on the [#maplibre tag](https://stackoverflow.com/questions/tagged/maplibre) — or [ask a new question](https://stackoverflow.com/questions/tagged/maplibre).
+- **Have a bug to report?** [Open an issue](https://github.com/maplibre/flutter-maplibre-gl/issues/new). If possible, include a full log and information which shows the issue.
+- **Have a feature request?** [Open an issue](https://github.com/maplibre/flutter-maplibre-gl/issues/new). Tell us what the feature should do and why you want the feature.
 
 ## Running in GitHub Codespaces
 
@@ -235,10 +236,29 @@ buildTypes {
 }
 ```
 
+## Flutter 3.x.x issues
+Since Flutter 3.x.x was introduced, it exposed some race conditions resulting in occasional crashes upon map disposal. The parameter `useDelayedDisposal` was introduced as a workaround for this issue until Flutter and/or Maplibre fix this issue properly. Use with caution.
+
+
+
 ### iOS app crashes on startup
 
 Please include the `NSLocationWhenInUseUsageDescription` as described [here](#location-features)
 
+### Layer is not displayed on IOS, but no error
+
+Have a look in your `LayerProperties` object, if you supply a `lineColor` argument, (or any color argument) the issue might come from here.
+Android supports the following format : `'rgba(192, 192, 255, 1.0)'`,  but on iOS, this doesn't work! 
+
+You have to have the color in the following format : `#C0C0FF` 
+
+### iOS crashes with error: `'NSInvalidArgumentException', reason: 'Invalid filter value: filter property must be a string'`
+Check if one of your expression is : `["!has", "value"]`. Android support this format, but iOS does not.
+You can replace your expression with :   `["!",["has", "value"] ]` which works both in Android and iOS.
+
+Note : iOS will display the error : `NSPredicate: Use of 'mgl_does:have:' as an NSExpression function is forbidden`, but it seems like the expression still works well.
+
 ## Contributing
 
-[Feedback](https://github.com/m0nac0/flutter-maplibre-gl/issues) and contributions are very welcome!
+
+[Feedback](https://github.com/maplibre/flutter-maplibre-gl/issues) and contributions are very welcome!
