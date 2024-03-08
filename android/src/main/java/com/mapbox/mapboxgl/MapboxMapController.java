@@ -361,7 +361,10 @@ final class MapboxMapController
       if (image != null) {
         // Match which function to call to the current render mode
         // see https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.location/-location-component-options/-builder/index.html
-        switch(this.myLocationRenderMode) {
+        
+        // The Flutter MyLocationRenderMode enum is 0,1,2 and the native RenderMode values are 12,4,8 currently
+        int[] mapboxRenderModes = new int[] {RenderMode.NORMAL, RenderMode.COMPASS, RenderMode.GPS};
+        switch(mapboxRenderModes[this.myLocationRenderMode]) {
           case RenderMode.NORMAL:
             optionsBuilder.backgroundName(puckImage);
             break;
