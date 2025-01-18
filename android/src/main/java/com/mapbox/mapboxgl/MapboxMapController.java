@@ -1153,7 +1153,7 @@ final class MapboxMapController
           if (this.myLocationEnabled
               && locationComponent != null
               && locationComponent.isLocationComponentActivated()
-              && locationComponent.getLocationEngine() != null) { {
+              && locationComponent.getLocationEngine() != null) {
             Map<String, Object> reply = new HashMap<>();
             locationEngine.getLastLocation(
                 new LocationEngineCallback<LocationEngineResult>() {
