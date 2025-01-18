@@ -1133,7 +1133,10 @@ final class MapboxMapController
       case "locationComponent#getLastLocation":
         {
           Log.e(TAG, "location component: getLastLocation");
-          if (this.myLocationEnabled && locationComponent != null && locationEngine != null) {
+          if (this.myLocationEnabled
+              && locationComponent != null
+              && locationComponent.isLocationComponentActivated()
+              && locationComponent.getLocationEngine() != null) { {
             Map<String, Object> reply = new HashMap<>();
             locationEngine.getLastLocation(
                 new LocationEngineCallback<LocationEngineResult>() {
@@ -1155,6 +1158,11 @@ final class MapboxMapController
                     result.error("", "", null); // ???
                   }
                 });
+          } else {
+            result.error(
+                "LOCATION DISABLED",
+                "Location is disabled or location component is unavailable",
+                null);
           }
           break;
         }
@@ -1863,7 +1871,7 @@ final class MapboxMapController
   }
 
   private void updateMyLocationEnabled() {
-    if (this.locationComponent == null && myLocationEnabled) {
+    if (this.locationComponent == null && mapboxMap.getStyle() != null && myLocationEnabled) {
       enableLocationComponent(mapboxMap.getStyle());
     }
 
@@ -1881,6 +1889,7 @@ final class MapboxMapController
   private void startListeningForLocationUpdates() {
     if (locationEngineCallback == null
         && locationComponent != null
+        && locationComponent.isLocationComponentActivated()
         && locationComponent.getLocationEngine() != null) {
       locationEngineCallback =
           new LocationEngineCallback<LocationEngineResult>() {
@@ -1902,6 +1911,7 @@ final class MapboxMapController
   private void stopListeningForLocationUpdates() {
     if (locationEngineCallback != null
         && locationComponent != null
+        && locationComponent.isLocationComponentActivated()
         && locationComponent.getLocationEngine() != null) {
       locationComponent.getLocationEngine().removeLocationUpdates(locationEngineCallback);
       locationEngineCallback = null;
